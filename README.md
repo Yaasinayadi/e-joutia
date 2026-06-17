@@ -9,7 +9,7 @@ Actuellement, le développement est focalisé sur le **Projet 2 : Moteur de Rech
 - ✅ **Barre de recherche** dynamique avec historique (3 dernières recherches).
 - ✅ **Affichage des résultats** sous forme de grille (2 colonnes) avec image, prix, titre et distance.
 - ✅ **Module de filtrage** interactif (Bottom Sheet) pour la catégorie, l'état du produit et le tri.
-- ⏳ **En attente** : Intégration d'un Slider interactif pour le filtre de prix (actuellement des champs texte).
+- ✅ **Slider de Prix** : Intégration d'un composant interactif pour le filtre de prix maximum.
 
 ## 🚀 Prérequis
 

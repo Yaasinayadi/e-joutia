@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import BottomSheet, { BottomSheetView, BottomSheetScrollView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import Slider from '@react-native-community/slider';
 import { SearchContext, FilterState, SortOption } from '../context/SearchContext';
 import { Product } from '../data/mockData';
 
@@ -350,32 +351,33 @@ const SearchScreen = () => {
               })}
             </View>
 
-            <Text style={styles.sectionTitle}>Prix (DH)</Text>
-            <View style={styles.priceContainer}>
-              <View style={{ flex: 1 }}>
-                <TextInput
-                  style={styles.priceInput}
-                  placeholder="Min"
-                  placeholderTextColor="#9CA3AF"
-                  keyboardType="numeric"
-                  value={tempFilters.minPrice ?? ''}
-                  onChangeText={(text: string) =>
-                    setTempFilters((prev: TempFilterState) => ({ ...prev, minPrice: text }))
-                  }
-                />
-              </View>
-              <Text style={styles.priceSeparator}>-</Text>
-              <View style={{ flex: 1 }}>
-                <TextInput
-                  style={styles.priceInput}
-                  placeholder="Max"
-                  placeholderTextColor="#9CA3AF"
-                  keyboardType="numeric"
-                  value={tempFilters.maxPrice ?? ''}
-                  onChangeText={(text: string) =>
-                    setTempFilters((prev: TempFilterState) => ({ ...prev, maxPrice: text }))
-                  }
-                />
+            <View style={styles.priceHeader}>
+              <Text style={styles.sectionTitle}>Prix Maximum</Text>
+              <Text style={styles.priceValue}>
+                {tempFilters.maxPrice && tempFilters.maxPrice !== '' ? `${tempFilters.maxPrice} DH` : 'Tous les prix'}
+              </Text>
+            </View>
+            <View style={styles.sliderContainer}>
+              <Slider
+                style={styles.slider}
+                minimumValue={0}
+                maximumValue={10000}
+                step={100}
+                value={tempFilters.maxPrice && tempFilters.maxPrice !== '' ? parseFloat(tempFilters.maxPrice) : 10000}
+                onValueChange={(value) => 
+                  setTempFilters((prev: TempFilterState) => ({ 
+                    ...prev, 
+                    maxPrice: value === 10000 ? null : value.toString(), 
+                    minPrice: null 
+                  }))
+                }
+                minimumTrackTintColor="#2563EB"
+                maximumTrackTintColor="#D1D5DB"
+                thumbTintColor="#2563EB"
+              />
+              <View style={styles.sliderLabels}>
+                <Text style={styles.sliderLabelText}>0 DH</Text>
+                <Text style={styles.sliderLabelText}>10 000+ DH</Text>
               </View>
             </View>
             <View style={{ height: 40 }} />
@@ -494,12 +496,12 @@ const styles = StyleSheet.create({
   pillActive: { backgroundColor: '#EFF6FF', borderColor: '#2563EB' },
   pillText: { color: '#4B5563', fontSize: 14, fontWeight: '500', textAlign: 'center' },
   pillTextActive: { color: '#2563EB', fontWeight: '600' },
-  priceContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: 20 },
-  priceInput: {
-    width: '100%', backgroundColor: '#F3F4F6', borderRadius: 12,
-    paddingHorizontal: 16, height: 48, fontSize: 15, color: '#111827',
-  },
-  priceSeparator: { fontSize: 18, color: '#9CA3AF', fontWeight: '600', marginHorizontal: 10 },
+  priceHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  priceValue: { fontSize: 15, fontWeight: '600', color: '#2563EB', marginBottom: 12, marginTop: 16 },
+  sliderContainer: { marginBottom: 20 },
+  slider: { width: '100%', height: 40 },
+  sliderLabels: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 4 },
+  sliderLabelText: { fontSize: 12, color: '#9CA3AF', fontWeight: '500' },
   sheetFooter: {
     flexDirection: 'row', justifyContent: 'space-between', gap: 12,
     paddingHorizontal: 20, paddingTop: 16, paddingBottom: Platform.OS === 'ios' ? 28 : 20,
