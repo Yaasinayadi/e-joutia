@@ -51,14 +51,21 @@ const ProductCard = ({ product }: ProductCardProps) => {
   // Image par défaut élégante si l'URL Unsplash est brisée
   const fallbackImg = "https://images.unsplash.com/photo-1560393464-5c69a73c5770?auto=format&fit=crop&w=500&q=60";
 
+  // Supporte les images locales (require → number sur native, object sur web) et URLs distantes (string)
+  const imageSource = typeof product.imageUrl !== 'string'
+    ? product.imageUrl
+    : { uri: imgError ? fallbackImg : product.imageUrl };
+
   return (
     <TouchableOpacity style={styles.cardContainer} activeOpacity={0.8}>
-      <Image 
-        source={{ uri: imgError ? fallbackImg : product.imageUrl }} 
-        style={styles.cardImage} 
-        resizeMode="cover" 
-        onError={() => setImgError(true)}
-      />
+      <View style={styles.cardImageContainer}>
+        <Image 
+          source={imageSource} 
+          style={styles.cardImage} 
+          resizeMode="cover" 
+          onError={() => setImgError(true)}
+        />
+      </View>
       <View style={styles.cardContent}>
         <Text style={styles.cardPrice}>{product.price.toLocaleString()} DH</Text>
         <Text style={styles.cardTitle} numberOfLines={1}>{product.title}</Text>
@@ -294,7 +301,7 @@ const SearchScreen = () => {
             keyboardShouldPersistTaps="handled"
           >
             <Text style={styles.sectionTitle}>Trier par</Text>
-            <View style={styles.pillContainer}>
+            <View style={styles.wrapContainer}>
               {SORT_OPTIONS.map(option => {
                 const isActive = tempFilters.sortBy === option.value;
                 return (
@@ -312,25 +319,23 @@ const SearchScreen = () => {
             </View>
 
             <Text style={styles.sectionTitle}>Catégorie</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-              <View style={styles.horizontalPillContainer}>
-                {CATEGORIES.map(cat => {
-                  const isActive = tempFilters.category === cat;
-                  return (
-                    <TouchableOpacity
-                      key={cat}
-                      style={[styles.pill, isActive && styles.pillActive]}
-                      onPress={() => toggleTempFilter('category', cat)}
-                    >
-                      <Text style={[styles.pillText, isActive && styles.pillTextActive]}>{cat}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </ScrollView>
+            <View style={styles.wrapContainer}>
+              {CATEGORIES.map(cat => {
+                const isActive = tempFilters.category === cat;
+                return (
+                  <TouchableOpacity
+                    key={cat}
+                    style={[styles.pill, isActive && styles.pillActive]}
+                    onPress={() => toggleTempFilter('category', cat)}
+                  >
+                    <Text style={[styles.pillText, isActive && styles.pillTextActive]}>{cat}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
 
             <Text style={styles.sectionTitle}>État du produit</Text>
-            <View style={styles.pillContainer}>
+            <View style={styles.wrapContainer}>
               {CONDITIONS.map(cond => {
                 const isActive = tempFilters.condition === cond;
                 return (
@@ -347,27 +352,31 @@ const SearchScreen = () => {
 
             <Text style={styles.sectionTitle}>Prix (DH)</Text>
             <View style={styles.priceContainer}>
-              <TextInput
-                style={styles.priceInput}
-                placeholder="Min"
-                placeholderTextColor="#9CA3AF"
-                keyboardType="numeric"
-                value={tempFilters.minPrice ?? ''}
-                onChangeText={(text: string) =>
-                  setTempFilters((prev: TempFilterState) => ({ ...prev, minPrice: text }))
-                }
-              />
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  style={styles.priceInput}
+                  placeholder="Min"
+                  placeholderTextColor="#9CA3AF"
+                  keyboardType="numeric"
+                  value={tempFilters.minPrice ?? ''}
+                  onChangeText={(text: string) =>
+                    setTempFilters((prev: TempFilterState) => ({ ...prev, minPrice: text }))
+                  }
+                />
+              </View>
               <Text style={styles.priceSeparator}>-</Text>
-              <TextInput
-                style={styles.priceInput}
-                placeholder="Max"
-                placeholderTextColor="#9CA3AF"
-                keyboardType="numeric"
-                value={tempFilters.maxPrice ?? ''}
-                onChangeText={(text: string) =>
-                  setTempFilters((prev: TempFilterState) => ({ ...prev, maxPrice: text }))
-                }
-              />
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  style={styles.priceInput}
+                  placeholder="Max"
+                  placeholderTextColor="#9CA3AF"
+                  keyboardType="numeric"
+                  value={tempFilters.maxPrice ?? ''}
+                  onChangeText={(text: string) =>
+                    setTempFilters((prev: TempFilterState) => ({ ...prev, maxPrice: text }))
+                  }
+                />
+              </View>
             </View>
             <View style={{ height: 40 }} />
           </BottomSheetScrollView>
@@ -444,7 +453,8 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06, shadowRadius: 10, elevation: 3, overflow: 'hidden',
   },
-  cardImage: { width: '100%', height: 150, backgroundColor: '#E5E7EB' },
+  cardImageContainer: { width: '100%', aspectRatio: 1.2, overflow: 'hidden', backgroundColor: '#E5E7EB' },
+  cardImage: { width: '100%', height: '100%' },
   cardContent: { padding: 12 },
   cardPrice: { fontSize: 16, fontWeight: '800', color: '#2563EB', marginBottom: 6 },
   cardTitle: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 8 },
@@ -476,22 +486,20 @@ const styles = StyleSheet.create({
   sheetContent: { flex: 1 },
   sheetContentInner: { paddingHorizontal: 20, paddingTop: 8 },
   sectionTitle: { fontSize: 16, fontWeight: '600', color: '#374151', marginBottom: 12, marginTop: 16 },
-  pillContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  horizontalScroll: { marginHorizontal: -20, paddingHorizontal: 20 },
-  horizontalPillContainer: { flexDirection: 'row', gap: 10, paddingRight: 40 },
+  wrapContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, width: '100%' },
   pill: {
     backgroundColor: '#F3F4F6', paddingVertical: 10, paddingHorizontal: 16,
-    borderRadius: 20, borderWidth: 1, borderColor: '#F3F4F6', marginBottom: 10,
+    borderRadius: 20, borderWidth: 1, borderColor: '#F3F4F6', marginBottom: 8, marginRight: 8,
   },
   pillActive: { backgroundColor: '#EFF6FF', borderColor: '#2563EB' },
-  pillText: { color: '#4B5563', fontSize: 14, fontWeight: '500' },
+  pillText: { color: '#4B5563', fontSize: 14, fontWeight: '500', textAlign: 'center' },
   pillTextActive: { color: '#2563EB', fontWeight: '600' },
-  priceContainer: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 20 },
+  priceContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: 20 },
   priceInput: {
-    flex: 1, backgroundColor: '#F3F4F6', borderRadius: 12,
+    width: '100%', backgroundColor: '#F3F4F6', borderRadius: 12,
     paddingHorizontal: 16, height: 48, fontSize: 15, color: '#111827',
   },
-  priceSeparator: { fontSize: 18, color: '#9CA3AF', fontWeight: '600' },
+  priceSeparator: { fontSize: 18, color: '#9CA3AF', fontWeight: '600', marginHorizontal: 10 },
   sheetFooter: {
     flexDirection: 'row', justifyContent: 'space-between', gap: 12,
     paddingHorizontal: 20, paddingTop: 16, paddingBottom: Platform.OS === 'ios' ? 28 : 20,

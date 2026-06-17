@@ -6,7 +6,7 @@ export interface Product {
   category: string;
   condition: string;
   distance: number;
-  imageUrl: string;
+  imageUrl: string | number; // string = URL distante, number = require() local
 }
 
 export const mockData: Product[] = [
@@ -18,7 +18,7 @@ export const mockData: Product[] = [
     category: "Électronique",
     condition: "Comme neuf",
     distance: 1.2,
-    imageUrl: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&w=500&q=60"
+    imageUrl: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=60"
   },
   {
     id: "2",
@@ -68,7 +68,7 @@ export const mockData: Product[] = [
     category: "Maison",
     condition: "Comme neuf",
     distance: 4.2,
-    imageUrl: "https://images.unsplash.com/photo-1520218508822-998633d99765?auto=format&fit=crop&w=500&q=60"
+    imageUrl: "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=500&q=60"
   },
   {
     id: "7",
@@ -98,7 +98,7 @@ export const mockData: Product[] = [
     category: "Électronique",
     condition: "Neuf",
     distance: 0.8,
-    imageUrl: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=500&q=60"
+    imageUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=60"
   },
   {
     id: "10",
@@ -108,7 +108,7 @@ export const mockData: Product[] = [
     category: "Autres",
     condition: "Comme neuf",
     distance: 3.0,
-    imageUrl: "https://images.unsplash.com/photo-1550227298-1b2ea1850dd0?auto=format&fit=crop&w=500&q=60"
+    imageUrl: "https://images.unsplash.com/photo-1525201548942-d8732f6617a0?auto=format&fit=crop&w=500&q=60"
   },
   {
     id: "11",
@@ -118,7 +118,7 @@ export const mockData: Product[] = [
     category: "Maison",
     condition: "Bon état",
     distance: 7.2,
-    imageUrl: "https://images.unsplash.com/photo-1534889156217-d643df14f14a?auto=format&fit=crop&w=500&q=60"
+    imageUrl: "https://images.unsplash.com/photo-1600166898405-da9535204843?auto=format&fit=crop&w=500&q=60"
   },
   {
     id: "12",
@@ -128,6 +128,6 @@ export const mockData: Product[] = [
     category: "Véhicules",
     condition: "Correct",
     distance: 2.5,
-    imageUrl: "https://images.unsplash.com/photo-1593847847101-b26402ec9d71?auto=format&fit=crop&w=500&q=60"
+    imageUrl: require('../../assets/images/products/trotinette_electrique.png')
   }
 ];
